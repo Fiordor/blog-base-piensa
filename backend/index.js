@@ -5,13 +5,8 @@ const app = express();
 const public_ip = '82.223.68.210';
 const port = 3000;
 
-/*
-const net = require('net');
-const client = net.connect({ port: 80, host: "google.com" }, () => {
-  console.log('MyIP=' + client.localAddress);
-  console.log('MyPORT=' + client.localPort);
-});
-*/
+app.use( express.urlencoded({ extended: true }) );
+app.use(express.json())
 
 const mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -24,10 +19,14 @@ var connection = mysql.createConnection({
 connection.connect();
 
 app.get('/', (req, res) => {
+  console.log('path', '/');
   res.send('Nice try');
 });
 
-app.get('/articles', (req, res) => {
+app.post('/articles', (req, res) => {
+  console.log('path', '/articles');
+  console.log('body', req.body);
+
   connection.query('SELECT * FROM article', function (err, rows, fields) {
     if (err) throw err;
     res.send(rows);

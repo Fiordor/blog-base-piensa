@@ -25,7 +25,8 @@ app.get('/', (req, res) => {
 
 app.post('/articles', (req, res) => {
   console.log('path', '/articles');
-  console.log('body', req.body);
+  console.log('body');
+  console.log(req.body);
 
   connection.query('SELECT * FROM article', function (err, rows, fields) {
     if (err) throw err;

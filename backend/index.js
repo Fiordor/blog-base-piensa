@@ -4,11 +4,12 @@ const app = express();
 const cors = require('cors');
 
 const fs = require('fs');
+const Manager = require('./src/manager');
 
 const public_ip = '82.223.68.210';
 const port = 3000;
 
-app.use(cors( { origin: '*' } ));
+app.use(cors({ origin: '*' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 
@@ -27,7 +28,7 @@ app.get('/', (req, res) => {
   res.send('Nice try');
 });
 
-app.post('/api', (req, res) => {
+app.post('/api/article', (req, res) => {
   console.log('[', new Date(), ']', '/api', req.body);
 
   connection.query('SELECT * FROM article', function (err, rows, fields) {
@@ -39,7 +40,8 @@ app.post('/api', (req, res) => {
 app.post('/api/manager', (req, res) => {
   console.log('[', new Date(), ']', '/api/manager', req.body);
 
-  res.send({res: 'OK'});
+  let manager = new Manager(req, res, connection);
+  res.send( manager.run() );
 });
 
 app.listen(port, public_ip, () => {

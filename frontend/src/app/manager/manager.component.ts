@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ArticleService } from 'src/services/article.service';
+import { ManagerService } from 'src/services/manager/manager.service';
 
 @Component({
   selector: 'app-manager',
@@ -8,10 +8,14 @@ import { ArticleService } from 'src/services/article.service';
 })
 export class ManagerComponent implements OnInit {
 
-  constructor(private articleService: ArticleService) { }
+  articlesProcess = [];
+  articlesDone = [];
+  articlesPost = [];
+  articlesDelete = [];
+
+  constructor(private managerService: ManagerService) { }
 
   ngOnInit(): void {
-    this.articleService.sendPost();
+    this.managerService.getAllArticles().subscribe(res => { console.log(res); });
   }
-
 }

@@ -36,6 +36,12 @@ app.post('/api', (req, res) => {
   });
 });
 
+app.post('/api/manager', (req, res) => {
+  console.log('[', new Date(), ']', '/api/manager', req.body);
+
+  res.send({res: 'OK'});
+});
+
 app.listen(port, public_ip, () => {
   console.log(`App listening at http://${public_ip}:${port}`);
 });

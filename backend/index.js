@@ -39,9 +39,8 @@ app.post('/api/article', (req, res) => {
 
 app.post('/api/manager', (req, res) => {
   console.log('[', new Date(), ']', '/api/manager', req.body);
-
   let manager = new Manager(req, res, connection);
-  res.send( manager.run() );
+  manager.run();
 });
 
 app.listen(port, public_ip, () => {

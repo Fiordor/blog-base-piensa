@@ -1,32 +1,19 @@
 
-module.exports = class Manager {
+module.exports.run = (req, res, con) => {
 
-    req;
-
-    constructor(req, res, connection) {
-        this.req = req;
-        this.res = res;
-        this.con = connection;
+    if (req.body['fun'] == undefined) {
+        res.send( { res: 'err', message: 'fun is not defined' } );
     }
 
-    run() {
-
-        if (this.req.body['fun'] == undefined) {
-            this.res.send( { res: 'err', message: 'fun is not defined' } );
-        }
-
-        switch (this.req.body.fun) {
-            case 'getAllArticles': this.getAllArticles(); break;
-            default: this.res.send( { res: 'err', message: 'fun not exists' } );
-        }
+    switch (req.body.fun) {
+        case 'getAllArticles': getAllArticles(req, res, con); break;
+        default: res.send( { res: 'err', message: 'fun not exists' } );
     }
+}
 
-    getAllArticles() {
-
-        this.con.query('SELECT * FROM articles', function (err, rows, fields) {
-            if (err) throw err;
-            console.log(this.res);
-            this.res.send(rows);
-        });
-    }
+function getAllArticles(req, res, con) {
+    con.query('SELECT * FROM articles', (err, rows, fields) => {
+        if (err) { res.send(err); return; }
+        res.send(rows);
+    });
 }

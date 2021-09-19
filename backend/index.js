@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 
 const fs = require('fs');
-const Manager = require('./src/manager');
+const manager = require('./src/manager');
 
 const public_ip = '82.223.68.210';
 const port = 3000;
@@ -39,8 +39,7 @@ app.post('/api/article', (req, res) => {
 
 app.post('/api/manager', (req, res) => {
   console.log('[', new Date(), ']', '/api/manager', req.body);
-  let manager = new Manager(req, res, connection);
-  manager.run();
+  manager.run(req, res, connection);
 });
 
 app.listen(port, public_ip, () => {

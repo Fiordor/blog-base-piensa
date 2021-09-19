@@ -7,9 +7,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BackdoorComponent implements OnInit {
 
-  constructor() { }
+  user: string = '';
+  pass: string = '';
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
+  login() {
+    console.log('login');
+  }
 }

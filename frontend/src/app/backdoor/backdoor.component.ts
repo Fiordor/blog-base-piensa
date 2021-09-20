@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from 'src/services/authentication/authentication.service';
 
 @Component({
   selector: 'app-backdoor',
@@ -10,7 +11,7 @@ export class BackdoorComponent implements OnInit {
   user: string = '';
   pass: string = '';
 
-  constructor() {
+  constructor(private authenticationService: AuthenticationService) {
   }
 
   ngOnInit(): void {
@@ -18,5 +19,6 @@ export class BackdoorComponent implements OnInit {
 
   login() {
     console.log('login');
+    //this.authenticationService.login(this.user, this.pass);
   }
 }

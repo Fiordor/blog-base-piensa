@@ -15,7 +15,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient) {
     let json = JSON.parse(localStorage.getItem(this.CURRENT_USER) || '{}');
     console.log(this.checkValueStorage(json));
-    this.currentUserSubject = new BehaviorSubject<any>(json);
+    this.currentUserSubject = new BehaviorSubject<any>(this.checkValueStorage(json) ? json : {});
   }
 
   public get currentUserValue() {
@@ -23,7 +23,9 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string) {
-
+    let user = new User();
+    user.nickname = username;
+    user.password = password;
   }
 
   logout() {

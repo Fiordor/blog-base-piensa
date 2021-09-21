@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { User } from 'src/models/user/user';
 
 @Injectable({
@@ -26,11 +27,24 @@ export class AuthenticationService {
     let user = new User();
     user.nickname = username;
     user.password = password;
+
+    this.sendPost({ fun: 'login', user: user }).subscribe(res => {
+      console.log('sendPost', res);
+    });
   }
 
   logout() {
     localStorage.removeItem(this.CURRENT_USER);
     this.currentUserSubject.next(null);
+  }
+
+  private sendPost(body: any) {
+    let headers = new HttpHeaders();
+    headers = headers.append('Accept', 'application/json');
+    headers = headers.append('Content-Type', 'application/json');
+    headers = headers.append('Access-Control-Allow-Origin', '*');
+
+    return this.http.post(environment.api + 'manager', body, { headers: headers });
   }
 
   private checkValueStorage(json: any): boolean {

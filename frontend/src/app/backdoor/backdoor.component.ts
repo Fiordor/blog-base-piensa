@@ -18,7 +18,7 @@ export class BackdoorComponent implements OnInit {
   }
 
   login() {
-    console.log('login');
-    //this.authenticationService.login(this.user, this.pass);
+    console.log('Click!');
+    this.authenticationService.login(this.user, this.pass);
   }
 }

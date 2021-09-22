@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 
 module.exports.run = (req, res, con) => {
 
@@ -11,14 +12,18 @@ module.exports.run = (req, res, con) => {
 	switch (req.body.fun) {
 		case 'login': login(req, res, con); break;
 		case 'getAllArticles': getAllArticles(req, res, con); break;
-		default: res.send({ result: 'err', message: 'fun not exists' });
+		default: res.send(errJSON('fun not exists'));
 	}
 }
+
+//
+//	PATH FUNCTIONS
+//
 
 function getAllArticles(req, res, con) {
 	let sql = 'SELECT * FROM articles';
 	con.query(sql, (err, rows, fields) => {
-		if (err) { res.send(err); return; }
+		if (isError(err, res)) return;
 		res.send(rows);
 	});
 }
@@ -31,17 +36,61 @@ function login(req, res, con) {
 
 	let sql = `SELECT * FROM users u WHERE u.nickname = '${req.body.user.nickname}';`;
 	con.query(sql, (err, rows, fields) => {
-		if (errTest(err, res)) return;
+		if (isError(err, res)) return;
 		if (rows.length != 1) {
-			res.send({ result: 'err', message: 'rows != 1' });
+			res.send(errJSON('rows.length != 1'));
 		} else {
-			
+
+			let user = req.body.user;
+			let row = rows[0];
+
+			if (user.password != row.password) {
+				res.send(errJSON('password'));
+				return;
+			}
+
+			const token = crypto.randomBytes(48).toString('hex');
+
+			let datetime = parseDateJsToSql(new Date());
+
+			console.log(user.nickname, user.password, token, datetime, null);
+
+			let result = {
+				nickname: user.nickname,
+				password: '',
+				token: token,
+				lastConnection: datetime,
+				lastRequest: null
+			}
+			res.send(okJSON(result));
 		}
-		console.log(rows.length);
 	});
 }
 
-function errTest(err, res) {
+
+//
+//	PRIVATE FUNCTIONS
+//
+
+function parseDateJsToSql(date) {
+	return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+function parseDateSqlToJs(date) {
+	let t = date.split(/[- :]/);
+	return new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
+
+}
+
+function okJSON(message) {
+	return { result: 'ok', message: message }
+}
+
+function errJSON(message) {
+	return { result: 'err', message: message }
+}
+
+function isError(err, res) {
 	if (err) {
 		res.send({ result: 'err', message: err });
 		return true;

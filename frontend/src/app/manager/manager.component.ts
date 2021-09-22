@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { ManagerService } from 'src/services/manager/manager.service';
 
 @Component({
@@ -16,6 +17,6 @@ export class ManagerComponent implements OnInit {
   constructor(private managerService: ManagerService) { }
 
   ngOnInit(): void {
-    this.managerService.getAllArticles().subscribe(res => { console.log(res); });
+    console.log(environment.user);
   }
 }

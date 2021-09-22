@@ -4,6 +4,9 @@ import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from 'src/models/user/user';
 
+import { map } from 'rxjs/operators';
+import { Response } from 'src/models/response/response';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +18,6 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient) {
     let json = JSON.parse(localStorage.getItem(this.CURRENT_USER) || '{}');
-    console.log(this.checkValueStorage(json));
     this.currentUserSubject = new BehaviorSubject<any>(this.checkValueStorage(json) ? json : {});
   }
 
@@ -24,17 +26,19 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string) {
+
     let user = new User();
     user.nickname = username;
     user.password = password;
 
-    this.sendPost({ fun: 'login', user: user }).subscribe(res => {
-      /*
-      localStorage.setItem('user', JSON.stringify(user));
-      this.currentUserSubject.next(user);
-      */
-      console.log('sendPost', res);
-    });
+    return this.sendPost({ fun: 'login', user: user }).pipe( map(res => {
+      let result = <Response>res;
+      if (result.result == 'ok') {
+        localStorage.setItem('currentUser', JSON.stringify(result.message));
+        this.currentUserSubject.next(result.message);  
+      }
+      return result;
+    }));
   }
 
   logout() {

@@ -29,6 +29,10 @@ export class AuthenticationService {
     user.password = password;
 
     this.sendPost({ fun: 'login', user: user }).subscribe(res => {
+      /*
+      localStorage.setItem('user', JSON.stringify(user));
+      this.currentUserSubject.next(user);
+      */
       console.log('sendPost', res);
     });
   }

@@ -50,19 +50,27 @@ function login(req, res, con) {
 			}
 
 			const token = crypto.randomBytes(48).toString('hex');
-
-			let datetime = parseDateJsToSql(new Date());
-
-			console.log(user.nickname, user.password, token, datetime, null);
+			let lastConnection = new Date();
+			let keepConnection = addHours(lastConnection, 1);
 
 			let result = {
 				nickname: user.nickname,
 				password: '',
 				token: token,
-				lastConnection: datetime,
-				lastRequest: null
+				lastConnection: new Date(),
+				lastRequest: null,
 			}
-			res.send(okJSON(result));
+
+			lastConnection = parseDateJsToSql(lastConnection);
+			keepConnection = parseDateJsToSql(keepConnection);
+			let sql1 =
+				`UPDATE users 
+				SET token='${token}', lastConnection='${lastConnection}', keepConnection='${keepConnection}' 
+				WHERE nickname='${user.nickname}'`;
+			con.query(sql1, (err, rows, fields) => {
+				if (isError(err, res)) return;
+				res.send(okJSON(result));
+			});
 		}
 	});
 }
@@ -72,13 +80,18 @@ function login(req, res, con) {
 //	PRIVATE FUNCTIONS
 //
 
+function addHours(date, n) {
+	let d = new Date(date.toString());
+	return d = new Date(d.setHours(date.getHours() + n));
+}
+
 function parseDateJsToSql(date) {
 	return date.toISOString().slice(0, 19).replace('T', ' ');
 }
 
 function parseDateSqlToJs(date) {
 	let t = date.split(/[- :]/);
-	return new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
+	return new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]));
 
 }
 

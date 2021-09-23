@@ -1,7 +1,11 @@
-<p>backdoor works!</p>
-
-<div>
-    <input type="text" [(ngModel)]="user" placeholder="Usuario"/>
-    <input type="text" [(ngModel)]="pass" placeholder="Contraseña"/>
-    <span (click)="login()" >Click!</span>
+<div class="card-login">
+    <div class="card-login-columm">
+        <mat-form-field appearance="fill">
+            <mat-label>Usuario</mat-label>
+            <input matInput [(ngModel)]="user">
+        </mat-form-field>
+        <!--input type="text" [(ngModel)]="user" placeholder="Usuario" /-->
+        <input class="input-text" type="text" [(ngModel)]="pass" placeholder="Contraseña" />
+        <button mat-flat-button class="button-general" (click)="login()">Click!</button>
+    </div>
 </div>

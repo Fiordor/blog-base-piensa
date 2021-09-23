@@ -11,6 +11,12 @@ import { EditorComponent } from './editor/editor.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
+//
+// ANGULAR MATERIAL
+//
+import {MatButtonModule} from '@angular/material/button'; 
+import {MatInputModule} from '@angular/material/input';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,7 +31,10 @@ import { FormsModule } from '@angular/forms';
     HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    FormsModule
+    FormsModule,
+    //ANGULAR MATERIAL
+    MatButtonModule,
+    MatInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

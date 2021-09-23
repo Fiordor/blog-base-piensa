@@ -18,7 +18,9 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient) {
     let json = JSON.parse(localStorage.getItem(this.CURRENT_USER) || '{}');
-    this.currentUserSubject = new BehaviorSubject<any>(this.checkValueStorage(json) ? json : {});
+    if (!this.checkValueStorage(json)) json = {};
+    environment.user = json;
+    this.currentUserSubject = new BehaviorSubject<any>(json);
   }
 
   public get currentUserValue() {
@@ -35,7 +37,8 @@ export class AuthenticationService {
       let result = <Response>res;
       if (result.result == 'ok') {
         localStorage.setItem('currentUser', JSON.stringify(result.message));
-        this.currentUserSubject.next(result.message);  
+        this.currentUserSubject.next(result.message);
+        environment.user = result.message;
       }
       return result;
     }));
@@ -44,6 +47,7 @@ export class AuthenticationService {
   logout() {
     localStorage.removeItem(this.CURRENT_USER);
     this.currentUserSubject.next(null);
+    environment.user = <any>{};
   }
 
   private sendPost(body: any) {

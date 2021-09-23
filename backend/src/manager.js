@@ -56,9 +56,7 @@ function login(req, res, con) {
 			let result = {
 				nickname: user.nickname,
 				password: '',
-				token: token,
-				lastConnection: new Date(),
-				lastRequest: null,
+				token: token
 			}
 
 			lastConnection = parseDateJsToSql(lastConnection);

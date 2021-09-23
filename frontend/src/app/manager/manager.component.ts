@@ -18,5 +18,8 @@ export class ManagerComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(environment.user);
+    this.managerService.getArticlesProcess().subscribe(res => {
+      console.log(res);
+    });
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { Article } from 'src/models/article/article';
 import { ManagerService } from 'src/services/manager/manager.service';
 
 @Component({
@@ -9,17 +10,21 @@ import { ManagerService } from 'src/services/manager/manager.service';
 })
 export class ManagerComponent implements OnInit {
 
-  articlesProcess = [];
-  articlesDone = [];
-  articlesPost = [];
-  articlesDelete = [];
+  articles: Article[] = [];
+
+  articlesProcess: Article[] = [];
+  articlesDone: Article[] = [];
+  articlesPost: Article[] = [];
+  articlesDelete: Article[] = [];
 
   constructor(private managerService: ManagerService) { }
 
   ngOnInit(): void {
     console.log(environment.user);
     this.managerService.getArticlesProcess().subscribe(res => {
-      console.log(res);
+      this.articlesProcess = <Article[]>res.message;
+      this.articles = this.articlesProcess;
+      console.log(res.message);
     });
   }
 }

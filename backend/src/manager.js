@@ -10,7 +10,7 @@ module.exports.run = (req, res, con) => {
 	let sql = `SELECT * FROM users u WHERE u.nickname = '${req.body.user.nickname}';`;
 	con.query(sql, (err, rows, fields) => {
 		if (isError(err, res)) return;
-		if (isErrorUser(req.body.user, rows, res)) return;
+		if (isErrorUser(req.body.user, rows, res, con)) return;
 		switch (req.body.fun) {
 			case 'getArticlesProcess': getArticlesProcess(req, res, con); break;
 			case 'getArticlesDone': getArticlesDone(req, res, con); break;
@@ -57,6 +57,9 @@ function login(req, res, con) {
 			let lastConnection = new Date();
 			let keepConnection = addHours(lastConnection, HOURS_KEEP);
 
+			lastConnection = parseDateJsToSql(lastConnection);
+			keepConnection = parseDateJsToSql(keepConnection);
+
 			let result = { nickname: user.nickname, password: '', token: token }
 			let sql1 =
 				`UPDATE users 
@@ -78,8 +81,12 @@ function getArticlesProcess(req, res, con) {
 		`SELECT *
 		FROM articles a
 		WHERE a.done = 0 AND a.\`delete\` = 0 AND ISNULL(a.datePost);`;
+	let start = Date.now();
 	con.query(sql, (err, rows, fields) => {
 		if (isError(err, res)) return;
+
+		rows.forEach(row => { row.content = null; });
+
 		res.send(okJSON(rows));
 	});
 }
@@ -114,6 +121,10 @@ function addHours(date, n) {
 	return d = new Date(d.setHours(date.getHours() + n));
 }
 
+function parseDateJsToSql(date) {
+	return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 function isError(err, res) {
 	if (err) {
 		res.send(errJSON(err));
@@ -123,7 +134,7 @@ function isError(err, res) {
 	}
 }
 
-function isErrorUser(user, rows, res) {
+function isErrorUser(user, rows, res, con) {
 
 	if (rows.length != 1) {
 		res.send(errJSON('rows.length != 1'));
@@ -141,6 +152,17 @@ function isErrorUser(user, rows, res) {
 		res.send(errJSON('wrong token'));
 		return true;
 	}
+
+	let nowDate = new Date();
+	let lastRequest = parseDateJsToSql(nowDate);
+	let keepConnection = parseDateJsToSql(addHours(nowDate, HOURS_KEEP));
+
+	let sql =
+		`UPDATE users 
+		SET lastRequest='${lastRequest}', keepConnection='${keepConnection}' 
+		WHERE nickname='${user.nickname}'`;
+
+	con.query(sql, (err, rows, fields) => { });
 
 	return false;
 }
